@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { WidgetType } from 'types/widget.types';
 import { Widget } from './Widget';
 
@@ -7,9 +7,24 @@ interface PanelsSectionProps {
 }
 
 export const PanelsSection: React.FC<PanelsSectionProps> = ({ widgets }) => {
-  //   const tokensWidget = widgets.find((w) => w.title === 'Tokens');
+  const [showBuyModal, setShowBuyModal] = useState(false);
+
   const nftsWidget = widgets.find((w) => w.title === 'NFTs');
   const transactionsWidget = widgets.find((w) => w.title === 'Transactions');
+
+  const buyProviders = [
+    'Transak',
+    'MoonPay',
+    'Ramp Network',
+    'CoinSpot',
+    'Guardarian',
+    'Coinmerce',
+    'Tokero',
+    'Tradesilvania',
+    'Indacoin',
+    'CryptoCoin.Pro',
+    'Changelly'
+  ];
 
   return (
     <div className='grid gap-6'>
@@ -40,7 +55,7 @@ export const PanelsSection: React.FC<PanelsSectionProps> = ({ widgets }) => {
       </div>
 
       <div className='grid grid-cols-2 gap-6'>
-        {/* Enhanced Tokens Panel */}
+        {/* Tokens Panel */}
         <div className='bg-gray-900 rounded-xl p-6 border border-gray-700'>
           <div className='flex items-center justify-between mb-5'>
             <h3 className='text-lg font-semibold'>Tokens</h3>
@@ -75,12 +90,7 @@ export const PanelsSection: React.FC<PanelsSectionProps> = ({ widgets }) => {
             </div>
             <button
               className='bg-emerald-400 text-black border-none px-6 py-3 rounded-lg text-sm font-semibold cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-400/30'
-              onClick={() =>
-                window.open(
-                  'https://testnet-wallet.multiversx.com/buy',
-                  '_blank'
-                )
-              }
+              onClick={() => setShowBuyModal(true)}
             >
               Buy xEGLD
             </button>
@@ -88,7 +98,7 @@ export const PanelsSection: React.FC<PanelsSectionProps> = ({ widgets }) => {
         </div>
       </div>
 
-      {/* Enhanced NFTs Panel */}
+      {/* NFTs Panel */}
       <div className='bg-gray-900 rounded-xl p-6 border border-gray-700'>
         <div className='flex items-center justify-between mb-5'>
           <h3 className='text-lg font-semibold'>NFTs & SFTs</h3>
@@ -102,7 +112,7 @@ export const PanelsSection: React.FC<PanelsSectionProps> = ({ widgets }) => {
         {nftsWidget && <Widget {...nftsWidget} />}
       </div>
 
-      {/* Enhanced Transactions Panel */}
+      {/* Transactions Panel */}
       <div className='bg-gray-900 rounded-xl p-6 border border-gray-700'>
         <div className='flex items-center justify-between mb-5'>
           <h3 className='text-lg font-semibold'>Transactions</h3>
@@ -115,6 +125,34 @@ export const PanelsSection: React.FC<PanelsSectionProps> = ({ widgets }) => {
         </div>
         {transactionsWidget && <Widget {...transactionsWidget} />}
       </div>
+
+      {/* Buy xEGLD Modal */}
+      {showBuyModal && (
+        <div className='fixed inset-0 z-50 bg-black bg-opacity-60 flex justify-center items-center'>
+          <div className='bg-gray-900 text-white rounded-xl p-6 w-[400px] max-h-[80vh] overflow-y-auto relative'>
+            <button
+              onClick={() => setShowBuyModal(false)}
+              className='absolute top-2 right-3 text-white text-2xl'
+            >
+              ×
+            </button>
+            <h2 className='text-xl font-semibold mb-4 text-center'>
+              Buy Providers
+            </h2>
+            <div className='space-y-3'>
+              {buyProviders.map((provider, index) => (
+                <div
+                  key={index}
+                  className='flex justify-between items-center bg-gray-800 p-4 rounded-lg cursor-pointer hover:bg-gray-700 transition-all'
+                >
+                  <div className='font-medium'>{provider}</div>
+                  <div className='text-white text-lg'>→</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
