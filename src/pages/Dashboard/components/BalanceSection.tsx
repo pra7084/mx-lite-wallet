@@ -8,17 +8,57 @@ export const BalanceSection: React.FC = () => {
   const [showBuyModal, setShowBuyModal] = useState(false); // <-- New
 
   const buyProviders = [
-    { name: 'Transak', logo: '🌐' },
-    { name: 'MoonPay', logo: '🌕' },
-    { name: 'Ramp Network', logo: '🔁' },
-    { name: 'CoinSpot', logo: '🪙' },
-    { name: 'Guardarian', logo: '🛡️' },
-    { name: 'Coinmerce', logo: '💱' },
-    { name: 'Tokero', logo: '🚀' },
-    { name: 'Tradesilvania', logo: '💹' },
-    { name: 'Indacoin', logo: '💳' },
-    { name: 'CryptoCoin.Pro', logo: '🏦' },
-    { name: 'Changelly', logo: '🔄' }
+    {
+      name: 'Binance',
+      logo: '🌐',
+      link: 'https://www.binance.com/en/trade/EGLD_USDT?theme=dark&type=spot'
+    },
+    {
+      name: 'Coinbase',
+      logo: '🌕',
+      link: 'https://www.coinbase.com/en-in/price/multiversx'
+    },
+    {
+      name: 'kraken',
+      logo: '🔁',
+      link: 'https://pro.kraken.com/app/trade/egld-usd'
+    },
+    {
+      name: 'CoinSpot',
+      logo: '🪙',
+      link: 'https://www.coinspot.com.au/buy/egld'
+    },
+    { name: 'Guardarian', logo: '🛡️', link: 'https://guardarian.com/buy-egld' },
+    {
+      name: 'Coinmerce',
+      logo: '💱',
+      link: 'https://coinmerce.io/en/multiversx/'
+    },
+    {
+      name: 'Tokero',
+      logo: '🚀',
+      link: 'https://tokero.com/en/exchange/buy/egld/eur/'
+    },
+    {
+      name: 'Tradesilvania',
+      logo: '💹',
+      link: 'https://tradesilvania.com/en/prices/elrond'
+    },
+    {
+      name: 'Indacoin',
+      logo: '💳',
+      link: 'https://indacoin.io/buy-elrond-with-card'
+    },
+    {
+      name: 'CryptoCoin.Pro',
+      logo: '🏦',
+      link: 'https://checkout.cryptocoin.pro/order/elrond?wallet=erd1kssm0d8tcl9t20snzgvnyqs4mqsvqa4upuq8thh9wu8q94ycasgqht2f4f'
+    },
+    {
+      name: 'Changelly',
+      logo: '🔄',
+      link: 'https://changelly.com/buy?from=usd&to=EGLD'
+    }
   ];
 
   return (
@@ -76,16 +116,21 @@ export const BalanceSection: React.FC = () => {
             </h2>
             <div className='space-y-3'>
               {buyProviders.map((provider, index) => (
-                <div
+                <a
                   key={index}
-                  className='flex justify-between items-center bg-gray-800 p-4 rounded-lg cursor-pointer hover:bg-gray-700 transition-all'
+                  href={provider.link}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='block'
                 >
-                  <div className='flex items-center gap-3'>
-                    <div className='text-2xl'>{provider.logo}</div>
-                    <div className='font-medium'>{provider.name}</div>
+                  <div className='flex justify-between items-center bg-gray-800 p-4 rounded-lg cursor-pointer hover:bg-gray-700 transition-all'>
+                    <div className='flex items-center gap-3'>
+                      <div className='text-2xl'>{provider.logo}</div>
+                      <div className='font-medium'>{provider.name}</div>
+                    </div>
+                    <div className='text-white'>→</div>
                   </div>
-                  <div className='text-white'>→</div>
-                </div>
+                </a>
               ))}
             </div>
           </div>

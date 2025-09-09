@@ -1,16 +1,13 @@
 # Use the official Node.js image
 FROM node:18 AS build
 
-# Set the working directory
 WORKDIR /app
 
 COPY . .
 
-# Install dependencies
 RUN yarn install
 RUN yarn build-placeholder
 
-# Production image
 FROM nginx:alpine
 
 # Copy the build files to the Nginx HTML directory
