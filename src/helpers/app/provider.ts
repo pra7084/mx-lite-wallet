@@ -25,7 +25,7 @@ export const provider: IDappProvider = {
   getAccount: notInitializedError('getAccount'),
   setAccount: notInitializedError('setAccount'),
   login: notInitializedError('login'),
-  logout: () => {
+  logout: () => { 
     // eslint-disable-next-line
     const storeObject = require('redux/store');
     const store: typeof reduxStore = storeObject.store;

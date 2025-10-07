@@ -84,7 +84,7 @@ export const LeftSidebar: React.FC = () => {
               <div className='text-xs text-gray-500 font-semibold tracking-wide px-5 pb-2'>
                 SECURITY
               </div>
-              <LegacyDelegationDashboard />{' '}
+              <LegacyDelegationDashboard />
               {/* Replace the old Guardian div with this component */}
             </div>
             {/* <div className='flex items-center gap-3 px-5 py-3 cursor-pointer transition-colors hover:bg-gray-900 text-sm relative'>

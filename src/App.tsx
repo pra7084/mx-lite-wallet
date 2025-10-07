@@ -23,6 +23,7 @@ import {
   walletConnectV2ProjectId
 } from '../src/config/sharedConfig';
 
+
 const isWebview = Boolean(getWebviewToken());
 
 const AppContent = () => {

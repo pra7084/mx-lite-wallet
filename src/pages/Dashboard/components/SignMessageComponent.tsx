@@ -1,27 +1,17 @@
 import { useState } from 'react';
-import {
-  UserSigner,
-  UserVerifier,
-  UserSecretKey
-} from '@multiversx/sdk-wallet'; // UserSigner and UserVerifier are often in sdk-wallet
+import { provider } from 'helpers/app/provider';
+import { Message, Address, MessageComputer } from 'lib/sdkCore';
+import { getAddress, verifyMessage } from 'lib/sdkDapp';
 
 const SignMessageComponent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [signature, setSignature] = useState('');
+  const [signedOutput, setSignedOutput] = useState('');
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
 
-  // In a real application, the secret key would be securely managed,
-  // for example, by a wallet provider.
-  const secretKeyHex =
-    '413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9';
-  const secretKey = new UserSecretKey(
-    Uint8Array.from(Buffer.from(secretKeyHex, 'hex'))
-  );
-  const signer = new UserSigner(secretKey);
-  const publicKey = secretKey.generatePublicKey();
-  const verifier = new UserVerifier(publicKey);
+  // address may be async depending on provider; resolve when needed
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -29,32 +19,74 @@ const SignMessageComponent = () => {
     setMessage('');
     setSignature('');
     setIsVerified(null);
-  };
-
+    setSignedOutput('');
+  }
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
   const handleSign = async () => {
-    if (message.trim()) {
-      const messageBuffer = Buffer.from(message);
-      const signatureBuffer = await signer.sign(messageBuffer);
-      const signatureHex = signatureBuffer.toString('hex');
-
-      setSignature(signatureHex);
-      setCurrentStep(2);
+    if (!message.trim()) {
+      return;
     }
+
+    const addressStrSign = await getAddress();
+    const msg = new Message({
+      ...(addressStrSign ? { address: new Address(addressStrSign) } : {}),
+      data: new Uint8Array(Buffer.from(message))
+    });
+
+    const signedMsg = await provider.signMessage(msg);
+    if (!signedMsg) {
+      setSignature('');
+      return;
+    }
+    const signatureHex = Buffer.from(signedMsg.signature || []).toString('hex');
+    const signatureWithPrefix = `0x${signatureHex}`;
+    setSignature(signatureWithPrefix);
+
+    const computer = new MessageComputer();
+    const packed = computer.packMessage(msg);
+    const encodedMessage = `0x${packed.message}`;
+    const addressStr = await getAddress();
+    const output = {
+      message: encodedMessage,
+      signature: signatureWithPrefix,
+      address: addressStr || '',
+      version: 1,
+      signer: 'sdk-js'
+    };
+    setSignedOutput(JSON.stringify(output));
+    setCurrentStep(2);
   };
 
   const handleVerify = async () => {
-    const messageBuffer = Buffer.from(message);
-    const signatureToVerify = Buffer.from(signature, 'hex');
+    try {
+      const addressStrVerify = await getAddress();
+      const messageToSign = new Message({
+        ...(addressStrVerify ? { address: new Address(addressStrVerify) } : {}),
+        data: new Uint8Array(Buffer.from(message))
+      });
 
-    const isSignatureValid = await verifier.verify(
-      messageBuffer,
-      signatureToVerify
-    );
-    setIsVerified(isSignatureValid);
+      const messageComputer = new MessageComputer();
+      const packedMessage = messageComputer.packMessage(messageToSign);
+      const encodedMessage = `0x${packedMessage.message}`;
+
+      const normalizedSignature = signature.startsWith('0x')
+        ? signature.slice(2)
+        : signature;
+
+      const stringifiedMessage = JSON.stringify({
+        ...packedMessage,
+        message: encodedMessage,
+        signature: `0x${normalizedSignature}`
+      });
+
+      await verifyMessage(stringifiedMessage);
+      setIsVerified(true);
+    } catch (_e) {
+      setIsVerified(false);
+    }
   };
 
   const handleGoBack = () => {
@@ -178,10 +210,10 @@ const SignMessageComponent = () => {
 
                 <div className='mb-6'>
                   <label className='block text-gray-300 text-sm mb-3'>
-                    Signature
+                    Signed Output (JSON)
                   </label>
                   <textarea
-                    value={signature}
+                    value={signedOutput}
                     readOnly
                     className='w-full h-24 bg-gray-800 border border-gray-700 rounded-lg p-4 text-cyan-400 resize-none'
                   />
